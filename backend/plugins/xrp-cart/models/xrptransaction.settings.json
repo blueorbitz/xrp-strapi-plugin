@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "xrptransactions",
+  "info": {
+    "name": "xrptransaction"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true,
+    "increments": true,
+    "comment": ""
+  },
+  "attributes": {
+    "trxId": { "type": "string" },
+    "date": { "type": "date" },
+    "owner": { "type": "string" },
+    "url": { "type": "string" },
+    "content": { "type": "json" },
+    "nfts": {
+      "collection": "xrpnft",
+      "via": "originalTransaction",
+      "plugin": "xrp-cart"
+    }
+  }
+}

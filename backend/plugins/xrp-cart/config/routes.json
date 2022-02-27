@@ -1,0 +1,28 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "xrp-cart.index",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/payment-page",
+      "handler": "xrp-cart.paymentPage",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/post-payment",
+      "handler": "xrp-cart.postPayment",
+      "config": {
+        "policies": []
+      }
+    } 
+  ]
+}
