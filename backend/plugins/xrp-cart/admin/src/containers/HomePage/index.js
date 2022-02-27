@@ -13,23 +13,66 @@ import {
   PluginHeader,
 } from "strapi-helper-plugin";
 import {
-  Select,
   Label,
   InputText,
+  Button,
+  Table,
 } from "@buffetjs/core";
+import Block from "../../components/Block";
 
 const Row = styled.div`
   padding-top: 18px;
-  padding-left: 18px;
-  padding-right: 18px;
 `;
 
-class HomePage extends Component {
+const getUrl = to =>
+  to ? `/plugins/${pluginId}/${to}` : `/plugins/${pluginId}`;
+
+class HomePage extends React.Component {
   render() {
+    const headers = [
+      {
+        name: 'TrxId',
+        value: 'trxId',
+      },
+      {
+        name: 'Date',
+        value: 'date',
+      },
+      {
+        name: 'Owner',
+        value: 'owner',
+      },
+      {
+        name: 'Content',
+        value: 'content',
+      },
+    ];
+    
+    const rows = [
+      {
+        trxId: '000000000000',
+        date: '2022.02.22 00:00:00',
+        owner: 'Gagnaire',
+        content: 'Ratatouille',
+      },
+      {
+        trxId: '000000000000',
+        date: '2022.02.22 00:00:00',
+        owner: 'Veyrat',
+        content: 'Lemon Chicken',
+      },
+      {
+        trxId: '000000000000',
+        date: '2022.02.22 00:00:00',
+        owner: 'Blanc',
+        content: 'Beef bourguignon',
+      },
+    ];
+
     return (
       <div className={"container-fluid"} style={{padding: "18px 30px"}}>
         <PluginHeader
-          title={"XRP Shopping Cart"}
+          title={"XRP Cart"}
           description={"Integrate e-commerce with XRP and get rewarded with NFT"}
         />
         <HeaderNav
@@ -44,37 +87,14 @@ class HomePage extends Component {
             }
           ]}
           style={{marginTop: "4.4rem"}}
-        />
+        />        
         <div className="row">
           <Block
-            title="General"
+            title="Transactions"
             description="List of transactions made with NFT"
             style={{marginBottom: 12}}
           >
-            <Row className={"row"}>
-              <div className={"col-4"}>
-                <Label htmlFor="wallet">Wallet Address</Label>
-                <InputText
-                  name="input"
-                  onChange={({ target: { value } }) => {
-                    // setWallet(value);
-                  }}
-                  type="text"
-                  value={wallet}
-                />
-              </div>
-              <div className={"col-4"}>
-                <Label htmlFor="secret">Wallet Secret</Label>
-                <InputText
-                  name="input"
-                  onChange={({ target: { value } }) => {
-                    // setSecret(value);
-                  }}
-                  type="password"
-                  value={secret}
-                />
-              </div>
-            </Row>
+             <Table headers={headers} rows={rows} />
           </Block>
         </div>
       </div>
