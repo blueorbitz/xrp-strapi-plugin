@@ -5,27 +5,10 @@
  */
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
-import styled from "styled-components";
-import pluginId from '../../pluginId';
 import {
-  HeaderNav,
-  LoadingIndicator,
-  PluginHeader,
-} from "strapi-helper-plugin";
-import {
-  Label,
-  InputText,
-  Button,
   Table,
 } from "@buffetjs/core";
-import Block from "../../components/Block";
-
-const Row = styled.div`
-  padding-top: 18px;
-`;
-
-const getUrl = to =>
-  to ? `/plugins/${pluginId}/${to}` : `/plugins/${pluginId}`;
+import PluginWrapper from '../../components/PluginWrapper';
 
 class HomePage extends React.Component {
   render() {
@@ -70,34 +53,12 @@ class HomePage extends React.Component {
     ];
 
     return (
-      <div className={"container-fluid"} style={{padding: "18px 30px"}}>
-        <PluginHeader
-          title={"XRP Cart"}
-          description={"Integrate e-commerce with XRP and get rewarded with NFT"}
-        />
-        <HeaderNav
-          links={[
-            {
-              name: "Transactions",
-              to: getUrl("")
-            },
-            {
-              name: "Settings",
-              to: getUrl("settings")
-            }
-          ]}
-          style={{marginTop: "4.4rem"}}
-        />        
-        <div className="row">
-          <Block
-            title="Transactions"
-            description="List of transactions made with NFT"
-            style={{marginBottom: 12}}
-          >
-             <Table headers={headers} rows={rows} />
-          </Block>
-        </div>
-      </div>
+      <PluginWrapper
+        title={"Transactions"}
+        description={"List of transactions made with NFT"}
+      >
+        <Table headers={headers} rows={rows} />
+      </PluginWrapper>
     );
   }
 }

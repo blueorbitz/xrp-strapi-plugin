@@ -2,7 +2,7 @@
   "kind": "collectionType",
   "collectionName": "xrptransactions",
   "info": {
-    "name": "xrptransaction"
+    "name": "Xrp Transaction"
   },
   "options": {
     "draftAndPublish": false,

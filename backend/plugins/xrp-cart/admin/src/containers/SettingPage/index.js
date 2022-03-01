@@ -1,134 +1,99 @@
 /*
  *
- * HomePage
+ * SettingPage
  *
  */
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
-import styled from "styled-components";
-import pluginId from '../../pluginId';
 import {
-  HeaderNav,
-  LoadingIndicator,
-  PluginHeader,
+  FormBloc,
+  SizedInput,
+  BaselineAlignment,
+  CheckPagePermissions,
 } from "strapi-helper-plugin";
 import {
-  Flex,
-  Label,
-  InputText,
-  Button,
-  Checkbox,
+  Text,
 } from "@buffetjs/core";
-import Block from "../../components/Block";
+import PluginWrapper from '../../components/PluginWrapper';
 
-const Row = styled.div`
-  padding-top: 18px;
-`;
+class SettingPage extends React.Component {
+  render() {
+    const title = "XRP Cart";
+    const showLoader = false;
 
-const getUrl = to =>
-  to ? `/plugins/${pluginId}/${to}` : `/plugins/${pluginId}`;
-
-class HomePage extends React.Component {
-  render() {    
     return (
-      <div className={"container-fluid"} style={{padding: "18px 30px"}}>
-        <PluginHeader
-          title={"XRP Cart"}
-          description={"Integrate e-commerce with XRP and get rewarded with NFT"}
-        />
-        <HeaderNav
-          links={[
-            {
-              name: "Transactions",
-              to: getUrl("")
-            },
-            {
-              name: "Settings",
-              to: getUrl("settings")
-            }
-          ]}
-          style={{marginTop: "4.4rem"}}
-        />
-        <div className="row">
-          <Block
-            title="General"
-            description="Setup xrp account for transactions"
-            style={{marginBottom: 12}}
-          >
-            <Row className={"row"}>
-              <div className={"col-4"}>
-                <Label htmlFor="wallet">Wallet Address</Label>
-                <InputText
-                  name="input"
-                  onChange={({ target: { value } }) => {
-                    // setWallet(value);
-                  }}
-                  type="text"
-                  value={""}
-                />
-              </div>
-              <div className={"col-4"}>
-                <Label htmlFor="secret">Wallet Secret</Label>
-                <InputText
-                  name="input"
-                  onChange={({ target: { value } }) => {
-                    // setSecret(value);
-                  }}
-                  type="password"
-                  value={""}
-                />
-              </div>
-            </Row>
-            <Flex justifyContent='flex-end' alignItems="center">
-              <Button color="primary">Save</Button>
-            </Flex>
-          </Block>
-          
-          <Block
-            title="NFT Setting"
-            description="Setup the condition to give NFT"
-            style={{marginBottom: 12}}
-          >
-            <Row className={"row"}>
-              <Checkbox
-                message="Minimum spend for NFT"
-                name="checkbox"
-                onChange={({ target }) => setValue(target.value)}
-                value={false}
-              />
-              {/* <InputText
-                name="input"
-                onChange={({ target: { value } }) => {
-                  // setWallet(value);
-                }}
+      <PluginWrapper
+        title={title}
+        description={"Integrate e-commerce with XRP and get rewarded with NFT"}
+      >
+        <CheckPagePermissions permissions={[]}>
+          <div>
+            <BaselineAlignment top size="3px" />
+            <Text fontSize="md">
+              The plugin is configured through the <code>./config/plugins.js</code> file.
+            </Text>
+            <FormBloc
+              title={"Setup XRP Account"}
+              isLoading={showLoader}
+            >
+              <br />
+              <SizedInput
+                disabled
+                label={"Account"}
+                name="xrp-account"
+                placeholder={"insert xrp account id"}
+                size={{ xs: 12 }}
                 type="text"
                 value={""}
-              /> */}
-            </Row>
-            <Row className={"row"}>
-              <Checkbox
-                message="Discount for NFT holder"
-                name="checkbox"
-                onChange={({ target }) => setValue(target.value)}
-                value={false}
               />
-              {/* <InputText
-                name="input"
-                onChange={({ target: { value } }) => {
-                  // setWallet(value);
-                }}
-                type="text"
+              <SizedInput
+                label={"Secret"}
+                name="xrp-secret"
+                placeholder={"insert xrp secret"}
+                size={{ xs: 6 }}
+                type="password"
                 value={""}
-              /> */}
-            </Row>
-            <Flex justifyContent='flex-end' alignItems="center">
-              <Button color="primary">Save</Button>
-            </Flex>
-          </Block>
-        </div>
-      </div>
-    );
+              />
+              <SizedInput
+                disabled
+                label={"Encrypted Secret"}
+                name="xrp-encoded-secret"
+                placeholder={"encoded xrp secret"}
+                size={{ xs: 6 }}
+                type="password"
+                value={"sada"}
+              />
+            </FormBloc>
+            <BaselineAlignment top size="32px" />
+            <Text fontSize="md">
+              The plugin is configured through the <code>./config/plugins.js</code> file.
+            </Text>
+            <FormBloc
+              title={"Setup Minting Rule"}
+              isLoading={showLoader}
+            >
+              <SizedInput
+                disabled
+                label={"Minimum spend for NFT"}
+                name="min-spend"
+                size={{ xs: 6 }}
+                type="checkbox"
+                value={true}
+              />
+              <SizedInput
+                disabled
+                label={"Discount for NFT holder"}
+                name="nft-discount"
+                size={{ xs: 6 }}
+                type="checkbox"
+                value={true}
+              />
+            </FormBloc>
+          </div>
+        </CheckPagePermissions>
+      </PluginWrapper>
+    )
   }
 }
 
-export default memo(HomePage);
+export default memo(SettingPage);

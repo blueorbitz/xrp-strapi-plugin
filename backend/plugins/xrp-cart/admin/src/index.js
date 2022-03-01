@@ -1,9 +1,12 @@
+import React from 'react';
+import { CheckPagePermissions } from 'strapi-helper-plugin';
 import pluginPkg from '../../package.json';
 import pluginId from './pluginId';
 import App from './containers/App';
 import Initializer from './containers/Initializer';
 import lifecycles from './lifecycles';
 import trads from './translations';
+import SettingPage from './containers/SettingPage';
 
 export default strapi => {
   const pluginDescription = pluginPkg.strapi.description || pluginPkg.description;
@@ -46,6 +49,26 @@ export default strapi => {
         },
       ],
     },
+    // settings: {
+    //   menuSection: {
+    //     id: pluginId,
+    //     title: "Xrp Cart Plugin",
+    //     links: [
+    //       {
+    //         title: {
+    //           id: pluginId + '.setting',
+    //           defaultMessage: 'XRP Cart Settings',
+    //         },
+    //         name: 'settings',
+    //         to: `${strapi.settingsBaseURL}/${pluginId}`,
+    //         Component: () => (
+    //           <SettingPage />
+    //         ),
+    //         permissions: [],
+    //       },
+    //     ],
+    //   },
+    // },
   };
 
   return strapi.registerPlugin(plugin);
