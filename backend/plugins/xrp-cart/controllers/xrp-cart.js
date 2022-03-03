@@ -20,5 +20,29 @@ module.exports = {
 
   postPayment: async (ctx) => {
     ctx.send({ message: 'ok' });
-  }
+  },
+  
+  saveXrpOwner: async ctx => {
+    const services = strapi.plugins['xrp-cart'].services;
+    try {
+      const data = await services["xrp-cart"].saveXrpOwner(ctx);
+      ctx.send(data);
+    } catch (error) {
+      console.log(error);
+      ctx.response.status = 406;
+      ctx.response.message = "could not parse: " + error;
+    }
+  },
+  
+  readXrpOwner: async ctx => {
+    const services = strapi.plugins['xrp-cart'].services;
+    try {
+      const data = await services["xrp-cart"].readXrpOwner(ctx);
+      ctx.send(data);
+    } catch (error) {
+      console.log(error);
+      ctx.response.status = 406;
+      ctx.response.message = "could not parse: " + error;
+    }
+  },
 };

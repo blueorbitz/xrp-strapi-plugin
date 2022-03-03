@@ -6,6 +6,7 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import {
+  request,
   FormBloc,
   SizedInput,
   BaselineAlignment,
@@ -13,64 +14,96 @@ import {
 } from "strapi-helper-plugin";
 import {
   Text,
+  Button,
 } from "@buffetjs/core";
 import PluginWrapper from '../../components/PluginWrapper';
 
 class SettingPage extends React.Component {
+  state = {
+    isLoading: false,
+    isEditing: true,
+    xrpAccountId: "",
+    xrpAccountSecret: "",
+  };
+
+  componentDidMount = async () => {
+    const data = await request("/xrp-cart/xrp-owner", {
+      method: "GET",
+    });
+    data.xrpAccountSecret = "this is secret stuff";
+    this.setState(data);
+  }
+
+  toggleEditAccount = async () => {
+    this.setState({ isEditing: !this.state.isEditing });
+  };
+
+  handleChange = (e) => {
+    console.log({[e.target.name]: e.target.value});
+    this.setState({[e.target.name]: e.target.value});
+  };
+
+  saveAccount = async () => {
+    const { xrpAccountId, xrpAccountSecret } = this.state;
+    await request("/xrp-cart/xrp-owner", {
+      method: "POST",
+      body: { xrpAccountId, xrpAccountSecret }
+    });
+
+    this.setState({ isEditing: false });
+  }
+
   render() {
-    const title = "XRP Cart";
-    const showLoader = false;
+    const { isLoading, isEditing } = this.state;
+    const { xrpAccountId, xrpAccountSecret } = this.state;
 
     return (
       <PluginWrapper
-        title={title}
+        title={"XRP Cart"}
         description={"Integrate e-commerce with XRP and get rewarded with NFT"}
       >
         <CheckPagePermissions permissions={[]}>
           <div>
             <BaselineAlignment top size="3px" />
-            <Text fontSize="md">
-              The plugin is configured through the <code>./config/plugins.js</code> file.
-            </Text>
             <FormBloc
               title={"Setup XRP Account"}
-              isLoading={showLoader}
+              subtitle={<>The plugin is configured through the <code>./config/plugins.js</code> file.</>}
+              isLoading={isLoading}
+              actions={isEditing 
+                ? <>
+                    <Button color="cancel" onClick={this.toggleEditAccount}>Cancel</Button>
+                    <Button color="primary" onClick={this.saveAccount}>Save</Button>
+                  </>
+                : <Button color="secondary" onClick={this.toggleEditAccount}>Update</Button>
+              }
             >
               <br />
               <SizedInput
-                disabled
+                disabled={!isEditing} 
                 label={"Account"}
-                name="xrp-account"
+                name="xrpAccountId"
                 placeholder={"insert xrp account id"}
-                size={{ xs: 12 }}
+                onChange={this.handleChange}
+                size={{ xs: 6 }}
                 type="text"
-                value={""}
+                value={xrpAccountId}
               />
               <SizedInput
+                disabled={!isEditing}
                 label={"Secret"}
-                name="xrp-secret"
+                name="xrpAccountSecret"
                 placeholder={"insert xrp secret"}
+                onChange={this.handleChange}
                 size={{ xs: 6 }}
                 type="password"
-                value={""}
-              />
-              <SizedInput
-                disabled
-                label={"Encrypted Secret"}
-                name="xrp-encoded-secret"
-                placeholder={"encoded xrp secret"}
-                size={{ xs: 6 }}
-                type="password"
-                value={"sada"}
+                value={xrpAccountSecret}
               />
             </FormBloc>
             <BaselineAlignment top size="32px" />
-            <Text fontSize="md">
-              The plugin is configured through the <code>./config/plugins.js</code> file.
-            </Text>
             <FormBloc
               title={"Setup Minting Rule"}
-              isLoading={showLoader}
+              subtitle={<>The plugin is configured through the <code>./config/plugins.js</code> file.</>}
+              isLoading={isLoading}
             >
               <SizedInput
                 disabled

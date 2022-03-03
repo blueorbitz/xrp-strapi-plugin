@@ -7,10 +7,18 @@ import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import {
   Table,
-} from "@buffetjs/core";
+  Button,
+} from '@buffetjs/core';
+import {
+  BaselineAlignment,
+} from "strapi-helper-plugin";
 import PluginWrapper from '../../components/PluginWrapper';
 
 class HomePage extends React.Component {
+  test() {
+    console.log('writing file');
+  }
+
   render() {
     const headers = [
       {
@@ -58,6 +66,8 @@ class HomePage extends React.Component {
         description={"List of transactions made with NFT"}
       >
         <Table headers={headers} rows={rows} />
+        <BaselineAlignment top size="15px" />
+        <Button color={"primary"} label={"test"} onClick={this.test}/>
       </PluginWrapper>
     );
   }

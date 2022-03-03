@@ -23,6 +23,22 @@
       "config": {
         "policies": []
       }
-    } 
+    },
+    {
+      "method": "POST",
+      "path": "/xrp-owner",
+      "handler": "xrp-cart.saveXrpOwner",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/xrp-owner",
+      "handler": "xrp-cart.readXrpOwner",
+      "config": {
+        "policies": []
+      }
+    }
   ]
 }
