@@ -41,7 +41,7 @@ module.exports = {
     return emessage;
   },
   
-  readXrpOwner: async (ctx) => {
+  readXrpOwner: async () => {
     // Use fs.readFile() method to read the file
     const data = await new Promise((resolve, reject) => {
       fs.readFile('.tmp/.xrpOwner', 'utf8', (err, data) => {

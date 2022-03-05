@@ -78,7 +78,7 @@
       margin-top: 2px;
       width: 100%;
       box-sizing: border-box;
-      font-family: montserrat;
+      /* font-family: montserrat; */
       color: #2C3E50;
       font-size: 16px;
       letter-spacing: 1px
@@ -261,7 +261,7 @@
       <div class="col-11 col-sm-9 col-md-7 col-lg-6 text-center p-0 mt-3 mb-2">
         <div class="card px-0 pt-4 pb-0 mt-3 mb-3">
           <h2><strong>Pay with XRP</strong></h2>
-          <p>by <b><i>xrp-shopping-cart</i></b></p>
+          <p>by <b><i>strapi xrp-cart plugin</i></b></p>
           <div class="row">
             <div class="col-md-12 mx-0">
               <form id="msform">
@@ -293,32 +293,44 @@
                           <td></td>
                           <td class="text-end">Total</td>
                           <td class="text-end" id="pg1-total"></td>
+                          <td></td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
-                  <input type="button" name="next" class="next action-button" value="Next Step" />
+                  <button type="button" name="next" class="next action-button">
+                    Next Step
+                  </button>
                 </fieldset>
                 <fieldset>
                   <div class="form-card">
                     <h2 class="fs-title">Payment</h2>
-                    <p>Wallet address that want to use for payment...</p>
-                    <input type="text" name="wallet" placeholder="Wallet address" />
+                    <p>XRP address that want to use for payment...</p>
+                    <input
+                      type="text" class="form-control" name="paying-address"
+                      placeholder="eg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                      value="rGHrkw5qE1T25UZETTAtktBJ26Mqu5KrLy"
+                    />
                   </div>
-                  <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
-                  <input type="button" name="next" class="next action-button" value="Next Step" />
+                  <button type="button" name="previous" class="previous action-button-previous">
+                    Previous
+                  </button>
+                  <button type="button" name="next" class="next action-button">
+                    Next Step
+                  </button>
                 </fieldset>
                 <fieldset>
                   <div class="form-card">
                     <h2 class="fs-title">Approve</h2>
-                    <p>Waiting for Owner to accept the NFT Offer...</p>
-                    <p>Follow this guide:</p>
-                    <pre>
-                      trx_id: 000000000000
-                    </pre>
+                    <p id="approve-msg">Minting NFT...</p>
+                    <ol id="approve-code">
+                      <li><pre>hash: 6E823ABA8824F58EC068ADC9519512314018208C0E13E5DF05B87C2733A6A896</pre></li>
+                    </ol>
                   </div>
-                  <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
-                  <input type="button" name="make_payment" class="next action-button" value="Confirm" />
+                  <!-- <input type="button" name="previous" class="previous action-button-previous" value="Previous" /> -->
+                  <button type="button" name="make_payment" class="next action-button">
+                    Confirm
+                  </button>
                 </fieldset>
                 <fieldset>
                   <div class="form-card">
@@ -369,6 +381,7 @@
 
         //Add Class Active
         $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+        $("#progressbar li").eq($("fieldset").index(next_fs)).trigger('classChanged');
 
         //show the next fieldset
         next_fs.show();
@@ -395,6 +408,7 @@
 
         //Remove class active
         $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+        $("#progressbar li").eq($("fieldset").index(current_fs)).trigger('classChanged');
 
         //show the previous fieldset
         previous_fs.show();
@@ -473,6 +487,34 @@
           body: JSON.stringify({ xrpId, index: data.index }),
         });
         await loadCartDetails();
+      });
+
+      $("#approve").on("classChanged", async function () {
+        if($("#approve").hasClass("active")) {
+          $("#approve-msg").text("Minting NFT...");
+          $("#approve-code").empty();
+          const mintData = await fetchAPI('/xrp-cart/post-minting', {
+            method: "post",
+            body: JSON.stringify({ xrpId, payerAddress: $("input[name=paying-address]").val() }),
+          });
+          $("#approve-code").append(`<li><pre>hash: ${mintData.hash}</pre></li>`);
+          $("#approve-code").append(`<li><pre>TokenID: ${mintData.TokenID}</pre></li>`);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          $("#approve-msg").text("Creating sell offer...");
+          const offerData = await fetchAPI('/xrp-cart/post-offer', {
+            method: "post",
+            body: JSON.stringify({
+              xrpId, TokenID: mintData.TokenID,
+              payerAddress: $("input[name=paying-address]").val(),
+            }),
+          });
+          $("#approve-code").append(`<li><pre>hash: ${offerData.hash}</pre></li>`);
+          $("#approve-code").append(`<li><pre>OfferID: ${offerData.OfferID}</pre></li>`);
+    
+          $("#approve-msg").text("Done. Click confirm once you have accepted the OfferID!");
+        }
       });
     }
 

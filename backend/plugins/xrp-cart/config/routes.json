@@ -2,7 +2,7 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/",
+      "path": "/ipfs/:id",
       "handler": "xrp-cart.index",
       "config": {
         "policies": []
@@ -42,8 +42,16 @@
     },
     {
       "method": "POST",
-      "path": "/post-payment",
-      "handler": "xrp-cart.postPayment",
+      "path": "/post-minting",
+      "handler": "xrp-cart.postMinting",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/post-offer",
+      "handler": "xrp-cart.postOffer",
       "config": {
         "policies": []
       }

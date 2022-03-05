@@ -30,7 +30,7 @@ class SettingPage extends React.Component {
     const data = await request("/xrp-cart/xrp-owner", {
       method: "GET",
     });
-    data.xrpAccountSecret = "this is secret stuff";
+    data.xrpAccountSecret = "*****************************";
     this.setState(data);
   }
 
