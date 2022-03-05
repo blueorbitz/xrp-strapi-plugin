@@ -36,11 +36,11 @@ module.exports = {
 
   removeFromCart: async (ctx) => {
     const data = JSON.parse(ctx.request.body);
-    const { xrpId, itemId } = data; 
+    const { xrpId, index } = data; 
     if (tempCart[xrpId] == null)
       return;
 
-    const index = tempCart[xrpId].indexOf(itemId);
+    // const index = tempCart[xrpId].indexOf(itemId);
     tempCart[xrpId].splice(index, 1);
     ctx.send(tempCart[xrpId]);
   },

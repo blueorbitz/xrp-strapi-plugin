@@ -6,7 +6,7 @@ $(document).ready(function() {
   refreshCartCheckout();
   
   $("body").on("click", ".xrpcart-checkout", async function () {
-    window.location.href = "http://localhost:1337/xrp-cart/payment-page";
+    window.location.href = "http://localhost:1337/xrp-cart/payment-page?id=" + localStorage.getItem('xrp-cart-id');
   });
 
   $("body").on("click", ".xrpcart-add-item", async function (e) {

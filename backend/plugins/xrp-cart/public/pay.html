@@ -8,7 +8,7 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
   <style>
     * {
@@ -282,22 +282,17 @@
                           <th scope="col">Item</th>
                           <th scope="col" class="text-end">Quantity</th>
                           <th scope="col" class="text-end">Price/Unit</th>
+                          <th scope="col" class="text-end"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Dugpost</td>
-                          <td class="text-end">1</td>
-                          <td class="text-end">$1.00</td>
-                        </tr>
                       </tbody>
                       <tfoot>
                         <tr>
                           <th scope="col"></th>
                           <td></td>
                           <td class="text-end">Total</td>
-                          <td class="text-end">$1.00</td>
+                          <td class="text-end" id="pg1-total"></td>
                         </tr>
                       </tfoot>
                     </table>
@@ -365,10 +360,8 @@
   <!-- Wizard -->
   <script>
     $(document).ready(function () {
-
       var current_fs, next_fs, previous_fs; //fieldsets
       var opacity;
-
       $(".next").click(function () {
 
         current_fs = $(this).parent();
@@ -434,33 +427,67 @@
     });
   </script>
 
-  <!-- Load our React component. -->
-  <!-- <script>
-    const e = React.createElement;
+  <script>
+    let searchParams = new URLSearchParams(window.location.search);
+    const xrpId = searchParams.get('id');
+    load();
 
-    class LikeButton extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = { liked: false };
-      }
+    async function load() {
+      if (xrpId == null)
+        return;
 
-      render() {
-        if (this.state.liked) {
-          return 'You liked this.';
-        }
+      const loadCartDetails = async () => {
+        let storage = [];
+        if (xrpId != null)
+          storage = await fetchAPI('/xrp-cart/my-cart?id=' + xrpId);
+        console.log(storage);
 
-        return e(
-          'button',
-          { onClick: () => this.setState({ liked: true }) },
-          'Like'
-        );
-      }
+        const total = storage.reduce((t, n) => t + n.itemPrice, 0.0);
+        $("#pg1-total").text("$ " + total.toFixed(2));
+
+        $("tbody").empty();
+        storage.map((o, i) => {
+          $("tbody").append(`
+            <tr>
+              <th scope="row">${i + 1}</th>
+              <td>${o.itemName}</td>
+              <td class="text-end">1</td>
+              <td class="text-end">${o.itemPrice}</td>
+              <td class="text-end">
+                <button class="btn delete-item" data-item-id="${o.itemId}" data-index="${i}">
+                  <i class="fa fa-trash text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          `);
+        });
+      };
+
+      await loadCartDetails();
+
+      $("body").on("click", ".delete-item", async function (e) {
+        e.preventDefault();
+        const data = $(this).data();
+        await fetchAPI('/xrp-cart/remove-from-cart', {
+          method: "post",
+          body: JSON.stringify({ xrpId, index: data.index }),
+        });
+        await loadCartDetails();
+      });
     }
 
-    const domContainer = document.querySelector('#like_button_container');
-    ReactDOM.render(e(LikeButton), domContainer);
-  </script> -->
+    function getStrapiURL(path) {
+      return "http://localhost:1337" + `${path}`;
+    }
 
+    // Helper to make GET requests to Strapi
+    async function fetchAPI(path, options = {}) {
+      const requestUrl = getStrapiURL(path);
+      const response = await fetch(requestUrl, options);
+      const data = await response.json();
+      return data;
+    }
+  </script>
 </body>
 
 </html>
