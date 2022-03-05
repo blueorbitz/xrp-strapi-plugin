@@ -49,26 +49,26 @@ export default strapi => {
         },
       ],
     },
-    // settings: {
-    //   menuSection: {
-    //     id: pluginId,
-    //     title: "Xrp Cart Plugin",
-    //     links: [
-    //       {
-    //         title: {
-    //           id: pluginId + '.setting',
-    //           defaultMessage: 'XRP Cart Settings',
-    //         },
-    //         name: 'settings',
-    //         to: `${strapi.settingsBaseURL}/${pluginId}`,
-    //         Component: () => (
-    //           <SettingPage />
-    //         ),
-    //         permissions: [],
-    //       },
-    //     ],
-    //   },
-    // },
+    settings: {
+      menuSection: {
+        id: pluginId,
+        title: "Xrp Cart Plugin",
+        links: [
+          {
+            title: {
+              id: pluginId + '.setting',
+              defaultMessage: 'XRP Cart Settings',
+            },
+            name: 'settings',
+            to: `${strapi.settingsBaseURL}/${pluginId}`,
+            Component: () => (
+              <SettingPage />
+            ),
+            permissions: [{ action: 'plugins::xrp-cart.settings.read', subject: null }],
+          },
+        ],
+      },
+    },
   };
 
   return strapi.registerPlugin(plugin);

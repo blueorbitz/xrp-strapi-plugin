@@ -29,7 +29,7 @@ const ProductPage = ({ product }) => {
 
         {product.status === "published" ? (
           <button
-            className="snipcart-add-item mt-4 bg-white border border-gray-200 d hover:shadow-lg text-gray-700 font-semibold py-2 px-4 rounded shadow"
+            className="xrpcart-add-item xsnipcart-add-item mt-4 bg-white border border-gray-200 d hover:shadow-lg text-gray-700 font-semibold py-2 px-4 rounded shadow"
             data-item-id={product.id}
             data-item-price={product.price}
             data-item-url={router.asPath}

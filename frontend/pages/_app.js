@@ -10,16 +10,21 @@ const MyApp = ({ Component, pageProps }) => {
       <Head>
         <link rel="preconnect" href="https://app.snipcart.com" />
         <link rel="preconnect" href="https://cdn.snipcart.com" />
-        <link
-          rel="stylesheet"
+        <link rel="stylesheet"
           href="https://cdn.snipcart.com/themes/v3.0.16/default/snipcart.css"
         />
-        <script
-          async
+        <script async
           src="https://cdn.snipcart.com/themes/v3.0.16/default/snipcart.js"
+        />
+        <script
+          src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+          integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+          crossorigin="anonymous"
         />
       </Head>
       <Component {...pageProps} />
+      <div id="modal-root"></div>
+      <script src="test.js" />
     </Layout>
   )
 }

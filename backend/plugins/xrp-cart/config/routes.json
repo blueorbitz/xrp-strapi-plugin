@@ -17,6 +17,30 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/my-cart",
+      "handler": "xrp-cart.myCart",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/add-to-cart",
+      "handler": "xrp-cart.addToCart",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/remove-from-cart",
+      "handler": "xrp-cart.removeFromCart",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/post-payment",
       "handler": "xrp-cart.postPayment",
