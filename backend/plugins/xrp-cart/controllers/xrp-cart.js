@@ -50,8 +50,9 @@ module.exports = {
     }
   },
 
-  paymentPage: async ctx => {
-    await send(ctx, 'plugins/xrp-cart/public/pay.html');
+  getPublicFile: async ctx => {
+    const file = ctx.params.file;
+    await send(ctx, `plugins/xrp-cart/public/${file}`);
   },
 
   myCart: async ctx => {

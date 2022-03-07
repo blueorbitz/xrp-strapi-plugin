@@ -18,8 +18,8 @@
     },
     {
       "method": "GET",
-      "path": "/payment-page",
-      "handler": "xrp-cart.paymentPage",
+      "path": "/public/:file",
+      "handler": "xrp-cart.getPublicFile",
       "config": {
         "policies": []
       }

@@ -24,7 +24,7 @@ const MyApp = ({ Component, pageProps }) => {
       </Head>
       <Component {...pageProps} />
       <div id="modal-root"></div>
-      <script src="test.js" />
+      <script src="http://localhost:1337/xrp-cart/public/xrp-cart-init" />
     </Layout>
   )
 }

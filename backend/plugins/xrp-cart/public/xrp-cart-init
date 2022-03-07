@@ -8,7 +8,7 @@ $(document).ready(function () {
   $("body").on("click", ".xrpcart-checkout", async function () {
     const id = `id=${localStorage.getItem('xrp-cart-id')}`;
     const redir = `redir=${encodeURIComponent(location.origin)}`
-    window.location.href = `http://localhost:1337/xrp-cart/payment-page?${id}&${redir}`;
+    window.location.href = `http://localhost:1337/xrp-cart/public/pay.html?${id}&${redir}`;
   });
 
   $("body").on("click", ".xrpcart-add-item", async function (e) {
