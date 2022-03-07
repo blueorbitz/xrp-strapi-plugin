@@ -15,22 +15,28 @@ import {
 import {
   Text,
   Button,
+  Checkbox,
+  InputNumber,
 } from "@buffetjs/core";
 import PluginWrapper from '../../components/PluginWrapper';
 
 class SettingPage extends React.Component {
   state = {
     isLoading: false,
-    isEditing: true,
+    isEditing: false,
     xrpAccountId: "",
     xrpAccountSecret: "",
+    checkboxBurnable: false,
+    checkboxTrustLine: false,
+    checkboxTransferable: false,
+    checkboxDiscount: false,
+    inputDiscount: "",
   };
 
   componentDidMount = async () => {
     const data = await request("/xrp-cart/xrp-owner", {
       method: "GET",
     });
-    data.xrpAccountSecret = "*****************************";
     this.setState(data);
   }
 
@@ -39,15 +45,29 @@ class SettingPage extends React.Component {
   };
 
   handleChange = (e) => {
-    console.log({[e.target.name]: e.target.value});
-    this.setState({[e.target.name]: e.target.value});
+    console.log({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value });
   };
 
-  saveAccount = async () => {
+  saveSetting = async () => {
     const { xrpAccountId, xrpAccountSecret } = this.state;
+    const { checkboxBurnable, checkboxTrustLine, checkboxTransferable } = this.state;
+    const { checkboxDiscount, inputDiscount } = this.state;
+
+    console.log({
+      xrpAccountId, xrpAccountSecret,
+      checkboxBurnable, checkboxTrustLine, checkboxTransferable,
+      checkboxDiscount, inputDiscount,
+    });
+
     await request("/xrp-cart/xrp-owner", {
       method: "POST",
-      body: { xrpAccountId, xrpAccountSecret }
+      // body: { xrpAccountId, xrpAccountSecret }
+      body: {
+        xrpAccountId, xrpAccountSecret,
+        checkboxBurnable, checkboxTrustLine, checkboxTransferable,
+        checkboxDiscount, inputDiscount,
+      },
     });
 
     this.setState({ isEditing: false });
@@ -56,6 +76,8 @@ class SettingPage extends React.Component {
   render() {
     const { isLoading, isEditing } = this.state;
     const { xrpAccountId, xrpAccountSecret } = this.state;
+    const { checkboxBurnable, checkboxTrustLine, checkboxTransferable } = this.state;
+    const { checkboxDiscount, inputDiscount } = this.state;
 
     return (
       <PluginWrapper
@@ -69,17 +91,17 @@ class SettingPage extends React.Component {
               title={"Setup XRP Account"}
               subtitle={<>The plugin is configured through the <code>./config/plugins.js</code> file.</>}
               isLoading={isLoading}
-              actions={isEditing 
+              actions={isEditing
                 ? <>
-                    <Button color="cancel" onClick={this.toggleEditAccount}>Cancel</Button>
-                    <Button color="primary" onClick={this.saveAccount}>Save</Button>
-                  </>
+                  <Button color="cancel" onClick={this.toggleEditAccount}>Cancel</Button>
+                  <Button color="primary" onClick={this.saveSetting}>Save</Button>
+                </>
                 : <Button color="secondary" onClick={this.toggleEditAccount}>Update</Button>
               }
             >
               <br />
               <SizedInput
-                disabled={!isEditing} 
+                disabled={!isEditing}
                 label={"Account"}
                 name="xrpAccountId"
                 placeholder={"insert xrp account id"}
@@ -104,23 +126,50 @@ class SettingPage extends React.Component {
               title={"Setup Minting Rule"}
               subtitle={<>The plugin is configured through the <code>./config/plugins.js</code> file.</>}
               isLoading={isLoading}
+              actions={<Button color="primary" onClick={this.saveSetting}>Save</Button>}
             >
-              <SizedInput
-                disabled
-                label={"Minimum spend for NFT"}
-                name="min-spend"
-                size={{ xs: 6 }}
-                type="checkbox"
-                value={true}
-              />
-              <SizedInput
-                disabled
-                label={"Discount for NFT holder"}
-                name="nft-discount"
-                size={{ xs: 6 }}
-                type="checkbox"
-                value={true}
-              />
+              <div>
+                <ul>
+                  <li key={"Burnable"}>
+                    <Checkbox
+                      message="Burnable: indicates that the minted token may be burned by the issuer."
+                      name="checkboxBurnable"
+                      onChange={this.handleChange}
+                      value={checkboxBurnable}
+                    />
+                  </li>
+                  <li key={"TrustLine"}>
+                    <Checkbox
+                      message="TrustLine: indicates that the issuer wants a trustline to be automatically created."
+                      name="checkboxTrustLine"
+                      onChange={this.handleChange}
+                      value={checkboxTrustLine}
+                    />
+                  </li>
+                  <li key={"Transferable"}>
+                    <Checkbox
+                      message="Transferable: indicates that this NFT can be transferred."
+                      name="checkboxTransferable"
+                      onChange={this.handleChange}
+                      value={checkboxTransferable}
+                    />
+                  </li>
+                  <li key={"Discount"}>
+                    <Checkbox
+                      message="Discount: discount will be given to NFT holder of this issuer."
+                      name="checkboxDiscount"
+                      onChange={this.handleChange}
+                      value={checkboxDiscount}
+                    />
+                    <InputNumber
+                      name="input-Discount"
+                      placeholder="In percentage. Eg. 10 for (10%)"
+                      onChange={this.handleChange}
+                      value={inputDiscount}
+                    />
+                  </li>
+                </ul>
+              </div>
             </FormBloc>
           </div>
         </CheckPagePermissions>
