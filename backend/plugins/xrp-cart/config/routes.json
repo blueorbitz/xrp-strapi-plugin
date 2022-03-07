@@ -10,6 +10,14 @@
     },
     {
       "method": "GET",
+      "path": "/get-xrp-token",
+      "handler": "xrp-cart.getToken",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/payment-page",
       "handler": "xrp-cart.paymentPage",
       "config": {

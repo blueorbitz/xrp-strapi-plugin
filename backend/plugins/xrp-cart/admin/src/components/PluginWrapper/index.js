@@ -26,13 +26,9 @@ class PluginWrapper extends React.Component {
         <HeaderNav
           links={[
             {
-              name: "Transactions",
+              name: "Search Destination",
               to: getUrl("")
             },
-            {
-              name: "Settings",
-              to: getUrl("settings")
-            }
           ]}
           style={{marginTop: "4.4rem"}}
         />        

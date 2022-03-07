@@ -7,6 +7,7 @@
  */
 
 const send = require('koa-send');
+const path = require('path');
 const xrpl = require('xrpl');
 const fs = require('fs');
 const uuid = require('uuid');
@@ -15,9 +16,38 @@ const rippleUrl = 'wss://xls20-sandbox.rippletest.net:51233';
 module.exports = {
 
   index: async ctx => {
-    // ctx.send({ message: 'ok' });
-    console.log(ctx.params.id);
-    await send(ctx, `.tmp/meta/${ctx.params.id}.json`);
+    let regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+    const uuid = ctx.params.id;
+    if (!regexExp.test(uuid)) {
+      ctx.response.status = 400;
+      ctx.response.message = "Bad request";
+      return;
+    }
+
+    try {
+      console.log('index', uuid, path.resolve('.tmp/meta'));
+      await send(ctx, `${uuid}.json`, { root: path.resolve('.tmp/meta') });
+    } catch {
+      ctx.response.status = 404;
+      ctx.response.message = "Not found";
+    }
+  },
+
+  getToken: async ctx => {
+    try {
+      const client = new xrpl.Client(rippleUrl);
+      await client.connect();
+
+      const nfts = await client.request({
+        method: "account_nfts",
+        account: ctx.request.query.account,
+      })
+      client.disconnect();
+      ctx.send(nfts.result.account_nfts);
+    } catch (error) {
+      ctx.response.status = 404;
+      ctx.response.message = [];
+    }
   },
 
   paymentPage: async ctx => {
@@ -26,7 +56,7 @@ module.exports = {
 
   myCart: async ctx => {
     const xrpId = ctx.request.query.id;
-    
+
     const xrpcart = strapi.query("xrpcart", "xrp-cart");
     const cart = await xrpcart.findOne({ uid: xrpId });
     if (cart == null)
@@ -53,7 +83,7 @@ module.exports = {
   removeFromCart: async ctx => {
     const data = JSON.parse(ctx.request.body);
     const { xrpId, index } = data;
-    
+
     const xrpcart = strapi.query("xrpcart", "xrp-cart");
     let cart = await xrpcart.findOne({ uid: xrpId });
     if (cart == null)
@@ -148,7 +178,7 @@ async function storeMeta({ xrpId, content }) {
   // store data file, assume IPFS storage here
   await fs.promises.mkdir('.tmp/meta', { recursive: true }).catch(console.error);
   await new Promise((resolve, reject) => {
-    fs.writeFile(`.tmp/meta/${uid}.txt`, JSON.stringify(meta), err => {
+    fs.writeFile(`.tmp/meta/${uid}.json`, JSON.stringify(meta), err => {
       err ? reject(err) : resolve();
     });
   });
@@ -175,11 +205,19 @@ async function mintToken({ uid }) {
     // Note that you must convert the token URL to a hexadecimal
     // value for this transaction.
     // ----------------------------------------------------------
+    let Flags = ENUM_FLAG.tfOnlyXRP;
+    if (owner.checkboxBurnable)
+      Flags |= ENUM_FLAG.tfBurnable;
+    if (owner.checkboxTrustLine)
+      Flags |= ENUM_FLAG.tfTrustLine;
+    if (owner.checkboxTransferable)
+      Flags |= ENUM_FLAG.tfTransferable;
+
     const transactionBlob = {
       TransactionType: "NFTokenMint",
       Account: wallet.classicAddress,
       URI: xrpl.convertStringToHex(uid),
-      Flags: parseInt(ENUM_FLAG.tfBurnable | ENUM_FLAG.tfOnlyXRP | ENUM_FLAG.tfTransferable),
+      Flags: parseInt(Flags),
       TokenTaxon: 0, //Required, but if you have no use for it, set to zero.
     };
     console.log(transactionBlob);
