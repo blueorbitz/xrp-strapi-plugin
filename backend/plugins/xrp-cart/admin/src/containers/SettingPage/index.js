@@ -11,14 +11,14 @@ import {
   SizedInput,
   BaselineAlignment,
   CheckPagePermissions,
+  SettingsPageTitle,
 } from "strapi-helper-plugin";
 import {
-  Text,
   Button,
   Checkbox,
   InputNumber,
 } from "@buffetjs/core";
-import PluginWrapper from '../../components/PluginWrapper';
+import { Header } from '@buffetjs/custom';
 
 class SettingPage extends React.Component {
   state = {
@@ -80,12 +80,14 @@ class SettingPage extends React.Component {
     const { checkboxDiscount, inputDiscount } = this.state;
 
     return (
-      <PluginWrapper
-        title={"XRP Cart"}
-        description={"Integrate e-commerce with XRP and get rewarded with NFT"}
-      >
-        <CheckPagePermissions permissions={[]}>
+      <>
+        <CheckPagePermissions permissions={[{ action: 'plugins::xrp-cart.settings.read', subject: null }]}>
+          <SettingsPageTitle name={"XRP Cart Setting"} />
           <div>
+            <Header
+              title={{ label: "XRP Cart" }}
+              content={"Integrate e-commerce with XRP and get rewarded with NFT"}
+            />
             <BaselineAlignment top size="3px" />
             <FormBloc
               title={"Setup XRP Account"}
@@ -173,7 +175,7 @@ class SettingPage extends React.Component {
             </FormBloc>
           </div>
         </CheckPagePermissions>
-      </PluginWrapper>
+      </>
     )
   }
 }

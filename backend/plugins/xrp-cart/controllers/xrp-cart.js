@@ -77,7 +77,7 @@ module.exports = {
     const services = strapi.plugins['xrp-cart'].services;
     try {
       const data = await services["xrp-cart"].saveXrpOwner(ctx);
-      ctx.send(data);
+      ctx.send({ message: 'ok' });
     } catch (error) {
       console.log(error);
       ctx.response.status = 406;
