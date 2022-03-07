@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "xrpcarts",
+  "info": {
+    "name": "Xrp Cart"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true,
+    "increments": true,
+    "comment": ""
+  },
+  "attributes": {
+    "uid": { "type": "string" },
+    "content": { "type": "json" }
+  }
+}

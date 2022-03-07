@@ -10,7 +10,6 @@ const send = require('koa-send');
 const xrpl = require('xrpl');
 const fs = require('fs');
 const uuid = require('uuid');
-const tempCart = {};
 const rippleUrl = 'wss://xls20-sandbox.rippletest.net:51233';
 
 module.exports = {
@@ -27,36 +26,65 @@ module.exports = {
 
   myCart: async ctx => {
     const xrpId = ctx.request.query.id;
-    ctx.send(tempCart[xrpId] || []);
+    
+    const xrpcart = strapi.query("xrpcart", "xrp-cart");
+    const cart = await xrpcart.findOne({ uid: xrpId });
+    if (cart == null)
+      ctx.send([]);
+    else
+      ctx.send(cart.content || []);
   },
 
   addToCart: async ctx => {
     const data = JSON.parse(ctx.request.body);
     const { xrpId } = data;
-    if (tempCart[xrpId] == null)
-      tempCart[xrpId] = [];
 
-    tempCart[xrpId].push(data);
-    ctx.send(tempCart[xrpId]);
+    const xrpcart = strapi.query("xrpcart", "xrp-cart");
+    let cart = await xrpcart.findOne({ uid: xrpId });
+    if (cart != null) {
+      cart.content.push(data);
+      cart = await xrpcart.update({ id: cart.id }, { content: cart.content });
+    }
+    else
+      cart = await xrpcart.create({ uid: xrpId, content: [data] });
+    ctx.send(cart.content || []);
   },
 
   removeFromCart: async ctx => {
     const data = JSON.parse(ctx.request.body);
     const { xrpId, index } = data;
-    if (tempCart[xrpId] == null)
+    
+    const xrpcart = strapi.query("xrpcart", "xrp-cart");
+    let cart = await xrpcart.findOne({ uid: xrpId });
+    if (cart == null)
       return;
 
-    // const index = tempCart[xrpId].indexOf(itemId);
-    tempCart[xrpId].splice(index, 1);
-    ctx.send(tempCart[xrpId]);
+    cart.content.splice(index, 1);
+    cart = await xrpcart.update({ id: cart.id }, { content: cart.content });
+    ctx.send(cart.content);
   },
 
   postMinting: async ctx => {
     const data = JSON.parse(ctx.request.body);
     const { xrpId } = data;
 
-    const uid = await storeMeta({ xrpId });
+    const xrpcart = strapi.query("xrpcart", "xrp-cart");
+    const cart = await xrpcart.findOne({ uid: xrpId });
+    const content = cart != null ? cart.content : [];
+
+    const uid = await storeMeta({ xrpId, content });
     const response = await mintToken({ uid });
+
+    const xrptransaction = strapi.query("xrptransaction", "xrp-cart");
+    const transaction = await xrptransaction.create({
+      date: new Date(),
+      tokenId: response.TokenID,
+      url: uid,
+      mintHashId: response.hash,
+      content: content,
+    });
+
+    console.log("Mint success", transaction);
     ctx.send(response);
   },
 
@@ -64,12 +92,27 @@ module.exports = {
     const data = JSON.parse(ctx.request.body);
     const { xrpId, payerAddress, TokenID } = data;
 
-    const meta = tempCart[xrpId] || [];
-    const amount = (meta.reduce((t, n) => t + n.itemPrice, 0.0) * 1000000).toString();
+    const xrpcart = strapi.query("xrpcart", "xrp-cart");
+    const cart = await xrpcart.findOne({ uid: xrpId });
+    const content = cart != null ? cart.content : [];
+
+    const amount = (content.reduce((t, n) => t + n.itemPrice, 0.0) * 1000000).toString();
 
     const response = await createSellOffer({ TokenID, payerAddress, amount });
-    delete tempCart[xrpId];
 
+    let transaction;
+    const xrptransaction = strapi.query("xrptransaction", "xrp-cart");
+    transaction = await xrptransaction.findOne({ tokenId: TokenID });
+    transaction = await xrptransaction.update({ id: transaction.id }, {
+      destination: payerAddress,
+      amount: amount,
+      offerId: response.OfferID,
+      offerHashId: response.hash,
+    });
+
+    await xrpcart.delete({ id: cart.id });
+
+    console.log("Offer success", transaction);
     ctx.send(response);
   },
 
@@ -98,9 +141,9 @@ module.exports = {
   },
 };
 
-async function storeMeta({ xrpId }) {
+async function storeMeta({ xrpId, content }) {
   const uid = uuid.v4();
-  const meta = tempCart[xrpId] || [];
+  const meta = content;
 
   // store data file, assume IPFS storage here
   await fs.promises.mkdir('.tmp/meta', { recursive: true }).catch(console.error);

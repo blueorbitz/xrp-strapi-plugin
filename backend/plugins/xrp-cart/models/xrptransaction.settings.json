@@ -11,15 +11,14 @@
     "comment": ""
   },
   "attributes": {
-    "trxId": { "type": "string" },
     "date": { "type": "date" },
-    "owner": { "type": "string" },
+    "destination": { "type": "string" },
+    "tokenId": { "type": "string" },
+    "offerId": { "type": "string" },
     "url": { "type": "string" },
-    "content": { "type": "json" },
-    "nfts": {
-      "collection": "xrpnft",
-      "via": "originalTransaction",
-      "plugin": "xrp-cart"
-    }
+    "amount": { "type": "biginteger" },
+    "mintHashId": { "type": "string" },
+    "offerHashId": { "type": "string" },
+    "content": { "type": "json" }
   }
 }
