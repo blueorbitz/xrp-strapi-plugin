@@ -253,6 +253,8 @@
       object-fit: cover
     }
   </style>
+
+  <script src="https://unpkg.com/xrpl@2.1.0-beta.1"></script>
 </head>
 
 <body>
@@ -306,11 +308,8 @@
                   <div class="form-card">
                     <h2 class="fs-title">Payment</h2>
                     <p>XRP address that want to use for payment...</p>
-                    <input
-                      type="text" class="form-control" name="paying-address"
-                      placeholder="eg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                      value="rGHrkw5qE1T25UZETTAtktBJ26Mqu5KrLy"
-                    />
+                    <input type="text" class="form-control" name="paying-address"
+                      placeholder="eg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
                   </div>
                   <button type="button" name="previous" class="previous action-button-previous">
                     Previous
@@ -324,12 +323,18 @@
                     <h2 class="fs-title">Approve</h2>
                     <p id="approve-msg">Minting NFT...</p>
                     <ol id="approve-code">
-                      <li><pre>hash: 6E823ABA8824F58EC068ADC9519512314018208C0E13E5DF05B87C2733A6A896</pre></li>
+                      <li>
+                        <pre>hash: 6E823ABA8824F58EC068ADC9519512314018208C0E13E5DF05B87C2733A6A896</pre>
+                      </li>
                     </ol>
                   </div>
                   <!-- <input type="button" name="previous" class="previous action-button-previous" value="Previous" /> -->
-                  <button type="button" name="make_payment" class="next action-button">
-                    Confirm
+                  <button type="button" name="check_payment" class="check-accept-offer action-button">
+                    Refresh
+                  </button>
+                  <button type="button" name="done_payment" class="finish-offer next action-button"
+                    style="display:none;">
+                    Finish
                   </button>
                 </fieldset>
                 <fieldset>
@@ -346,7 +351,9 @@
                       </div>
                     </div>
                   </div>
-                  <input type="button" name="close" class="action-button" value="Close" />
+                  <button type="button" name="close" class="action-button">
+                    Close
+                  </button>
                 </fieldset>
               </form>
             </div>
@@ -442,8 +449,10 @@
   </script>
 
   <script>
+    const rippleUrl = "wss://xls20-sandbox.rippletest.net:51233";
     let searchParams = new URLSearchParams(window.location.search);
     const xrpId = searchParams.get('id');
+    const redir = searchParams.get('redir');
     load();
 
     async function load() {
@@ -489,11 +498,12 @@
         await loadCartDetails();
       });
 
+      let mintData;
       $("#approve").on("classChanged", async function () {
-        if($("#approve").hasClass("active")) {
+        if ($("#approve").hasClass("active")) {
           $("#approve-msg").text("Minting NFT...");
           $("#approve-code").empty();
-          const mintData = await fetchAPI('/xrp-cart/post-minting', {
+          mintData = await fetchAPI('/xrp-cart/post-minting', {
             method: "post",
             body: JSON.stringify({ xrpId, payerAddress: $("input[name=paying-address]").val() }),
           });
@@ -512,9 +522,39 @@
           });
           $("#approve-code").append(`<li><pre>hash: ${offerData.hash}</pre></li>`);
           $("#approve-code").append(`<li><pre>OfferID: ${offerData.OfferID}</pre></li>`);
-    
-          $("#approve-msg").text("Done. Click confirm once you have accepted the OfferID!");
+
+          $("#approve-msg").text("Click 'Refresh' once you have accepted the OfferID!");
         }
+      });
+
+      $("body").on("click", ".check-accept-offer", async function (e) {
+
+        const client = new xrpl.Client(rippleUrl);
+        await client.connect();
+        console.log("Connected to Sandbox");
+        const response = await client.request({
+          method: "account_nfts",
+          account: $("input[name=paying-address]").val(),
+        })
+        client.disconnect()
+        console.log(response);
+
+        if (mintData == null)
+          return;
+
+        const ntfs = response.result.account_nfts;
+        const tokens = ntfs.filter(o => o.TokenID === mintData.TokenID);
+
+        if (tokens.lengths === 0)
+          return;
+
+        $("#approve-msg").text("Thanks! We have received your payment.");
+        $(".check-accept-offer").css("display", "none");
+        $(".finish-offer").css("display", "inline")
+      });
+
+      $("body").on("click", "button[name=close]", async function (e) {
+        window.location.href = redir
       });
     }
 
@@ -529,6 +569,19 @@
       const data = await response.json();
       return data;
     }
+
+    async function getTokens() {
+      const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+      await client.connect()
+      console.log("Connected to Sandbox")
+      const nfts = await client.request({
+        method: "account_nfts",
+        account: $("input[name=paying-address]").val(),
+      })
+      client.disconnect()
+      return nfts;
+    } //End of getTokens
+
   </script>
 </body>
 

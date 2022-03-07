@@ -1,12 +1,14 @@
-$(document).ready(function() {
+$(document).ready(function () {
   console.log("ready!");
-  
+
   if (localStorage.getItem('xrp-cart-id') == null)
     localStorage.setItem('xrp-cart-id', generateUuid());
   refreshCartCheckout();
-  
+
   $("body").on("click", ".xrpcart-checkout", async function () {
-    window.location.href = "http://localhost:1337/xrp-cart/payment-page?id=" + localStorage.getItem('xrp-cart-id');
+    const id = `id=${localStorage.getItem('xrp-cart-id')}`;
+    const redir = `redir=${encodeURIComponent(location.origin)}`
+    window.location.href = `http://localhost:1337/xrp-cart/payment-page?${id}&${redir}`;
   });
 
   $("body").on("click", ".xrpcart-add-item", async function (e) {
@@ -39,12 +41,12 @@ async function fetchAPI(path, options = {}) {
   return data;
 }
 
-function generateUuid(){
-  var dt = new Date().getTime();
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (dt + Math.random()*16)%16 | 0;
-      dt = Math.floor(dt/16);
-      return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+function generateUuid() {
+  const dt = new Date().getTime();
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (dt + Math.random() * 16) % 16 | 0;
+    dt = Math.floor(dt / 16);
+    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
   return uuid;
 }

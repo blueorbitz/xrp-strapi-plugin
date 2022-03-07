@@ -63,11 +63,13 @@ module.exports = {
   postOffer: async ctx => {
     const data = JSON.parse(ctx.request.body);
     const { xrpId, payerAddress, TokenID } = data;
-    
+
     const meta = tempCart[xrpId] || [];
     const amount = (meta.reduce((t, n) => t + n.itemPrice, 0.0) * 1000000).toString();
 
     const response = await createSellOffer({ TokenID, payerAddress, amount });
+    delete tempCart[xrpId];
+
     ctx.send(response);
   },
 
@@ -203,7 +205,7 @@ async function createSellOffer({ TokenID, payerAddress, amount }) {
     const OfferID = nftSellOffers.result.offers[0].index;
 
     // Check transaction results -------------------------------------------------
-  
+
     client.disconnect();
 
     console.log("OfferID:", OfferID);
