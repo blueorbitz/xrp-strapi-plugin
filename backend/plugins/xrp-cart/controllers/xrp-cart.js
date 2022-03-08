@@ -127,7 +127,7 @@ module.exports = {
     const cart = await xrpcart.findOne({ uid: xrpId });
     const content = cart != null ? cart.content : [];
 
-    const amount = (content.reduce((t, n) => t + n.itemPrice, 0.0) * 1000000).toString();
+    const amount = parseInt(content.reduce((t, n) => t + n.itemPrice, 0.0) * 1000000).toString();
 
     const response = await createSellOffer({ TokenID, payerAddress, amount });
 
@@ -228,14 +228,28 @@ async function mintToken({ uid }) {
     console.log("Transaction result:", tx.result.meta.TransactionResult);
 
     // Check transaction results -------------------------------------------------
-    const AffectedNodes = tx.result.meta.AffectedNodes[0];
-    let accountNFTs;
-    if (AffectedNodes.CreatedNode != null)
-      accountNFTs = AffectedNodes.CreatedNode.NewFields.NonFungibleTokens;
-    else
-      accountNFTs = AffectedNodes.ModifiedNode.FinalFields.NonFungibleTokens;
-    const TokenID = accountNFTs[accountNFTs.length - 1].NonFungibleToken.TokenID;
     const hash = tx.result.hash;
+    
+    const nfts = await client.request({
+      method: "account_nfts",
+      account: wallet.classicAddress,
+    });
+
+    let accountNFTs, TokenID;
+    accountNFTs = nfts.result.account_nfts;
+    TokenID = accountNFTs[accountNFTs.length - 1].TokenID;
+
+    // const AffectedNodes = tx.result.meta.AffectedNodes[0];
+    // console.log(AffectedNodes);
+    // if (AffectedNodes.CreatedNode != null) {
+    //   accountNFTs = AffectedNodes.CreatedNode.NewFields.NonFungibleTokens;
+    //   TokenID = accountNFTs[accountNFTs.length - 1].NonFungibleToken.TokenID;
+    // }
+    // else {
+    //   accountNFTs = AffectedNodes.ModifiedNode.FinalFields.NonFungibleTokens;
+    //   TokenID = accountNFTs[accountNFTs.length - 1].NonFungibleToken.TokenID;
+    // }
+
     client.disconnect();
 
     console.log("hash:", hash);
