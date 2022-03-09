@@ -15,9 +15,9 @@ const Navbar = () => {
           />
         </a>
       </Link>
-      <button className="xrpcart-checkout snipxcart-checkout flex items-center">
+      <button className="xrpcart-checkout flex items-center">
         <NextImage height="150" width="150" src="/cart.svg" alt="Cart" />
-        <span className="xrpcart-total-price snipxcart-total-price ml-3 font-semibold text-sm text-indigo-500"></span>
+        <span className="xrpcart-total-price ml-3 font-semibold text-sm text-indigo-500"></span>
       </button>
     </div>
   )
