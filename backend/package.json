@@ -13,6 +13,8 @@
   "dependencies": {
     "knex": "0.21.18",
     "openpgp": "^5.2.0",
+    "pg": "^8.7.3",
+    "pg-connection-string": "^2.5.0",
     "sqlite3": "5.0.0",
     "strapi": "3.6.9",
     "strapi-admin": "3.6.9",
@@ -23,7 +25,8 @@
     "strapi-plugin-i18n": "3.6.9",
     "strapi-plugin-upload": "3.6.9",
     "strapi-plugin-users-permissions": "3.6.9",
-    "strapi-utils": "3.6.9"
+    "strapi-utils": "3.6.9",
+    "xrpl": "^2.1.1"
   },
   "author": {
     "name": "A Strapi developer"
