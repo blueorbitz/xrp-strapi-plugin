@@ -25,8 +25,13 @@ module.exports = {
     }
 
     try {
-      console.log('index', uuid, path.resolve('.tmp/meta'));
-      await send(ctx, `${uuid}.json`, { root: path.resolve('.tmp/meta') });
+      console.log('index', uuid);
+      const xrpsetting = strapi.query("xrpsetting", "xrp-cart");
+      const setting = await xrpsetting.findOne({ key: `meta-${uuid}` });
+      if (setting == null)
+        throw new Error("Not found");
+
+      await ctx.send(setting.value);
     } catch {
       ctx.response.status = 404;
       ctx.response.message = "Not found";
@@ -176,12 +181,10 @@ async function storeMeta({ xrpId, content }) {
   const uid = uuid.v4();
   const meta = content;
 
-  // store data file, assume IPFS storage here
-  await fs.promises.mkdir('.tmp/meta', { recursive: true }).catch(console.error);
-  await new Promise((resolve, reject) => {
-    fs.writeFile(`.tmp/meta/${uid}.json`, JSON.stringify(meta), err => {
-      err ? reject(err) : resolve();
-    });
+  const xrpsetting = strapi.query("xrpsetting", "xrp-cart");
+  setting = await xrpsetting.create({
+    key: `meta-${uid}`,
+    value: JSON.stringify(meta),
   });
 
   return uid;

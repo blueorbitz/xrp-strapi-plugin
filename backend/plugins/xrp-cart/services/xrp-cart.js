@@ -32,10 +32,17 @@ module.exports = {
   saveXrpOwner: async (ctx) => {
     const body = JSON.stringify(ctx.request.body);  
     const emessage = await encryptMessage(body, strapi.config.uuid);
-    const data = await new Promise((resolve, reject) => {
-      fs.writeFile('.tmp/.xrpOwner', emessage, err => {
-        err ? reject(err) : resolve();
+    
+    const xrpsetting = strapi.query("xrpsetting", "xrp-cart");
+    let setting = await xrpsetting.findOne({ key: "xrp-cart-setting" });
+    if (setting == null) 
+      setting = await xrpsetting.create({
+        key: "xrp-cart-setting",
+        value: emessage,
       });
+    else
+    setting = await xrpsetting.update({ id: setting.id }, {
+      value: emessage,
     });
 
     return emessage;
@@ -43,13 +50,12 @@ module.exports = {
   
   readXrpOwner: async () => {
     // Use fs.readFile() method to read the file
-    const data = await new Promise((resolve, reject) => {
-      fs.readFile('.tmp/.xrpOwner', 'utf8', (err, data) => {
-        err ? reject(err) : resolve(data);
-      });
-    });
+    const xrpsetting = strapi.query("xrpsetting", "xrp-cart");
+    const setting = await xrpsetting.findOne({ key: "xrp-cart-setting" });
+    if (setting == null)
+      throw new Error("setting not saved!");
 
-    const message = await decryptMessage(data, strapi.config.uuid);
+    const message = await decryptMessage(setting.value, strapi.config.uuid);
     return JSON.parse(message);
   },
 };

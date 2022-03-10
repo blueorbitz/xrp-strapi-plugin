@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "xrpsettings",
+  "info": {
+    "name": "Xrp Setting"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true,
+    "increments": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "key": { "type": "string" },
+    "value": { "type": "text" }
+  }
+}
