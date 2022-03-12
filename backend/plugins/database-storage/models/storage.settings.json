@@ -24,8 +24,8 @@
       "unique": true
     },
     "content": {
-      "type": "string",
-      "columnType": "text"
+      "type": "text",
+      "columnType": "bytea"
     },
     "mime": {
       "type": "string"
