@@ -8,16 +8,6 @@ const MyApp = ({ Component, pageProps }) => {
   return (
     <Layout categories={pageProps.categories}>
       <Head>
-        <link rel="preconnect" href="https://app.snipcart.com" />
-        <link rel="preconnect" href="https://cdn.snipcart.com" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.snipcart.com/themes/v3.0.16/default/snipcart.css"
-        />
-        <script
-          async
-          src="https://cdn.snipcart.com/themes/v3.0.16/default/snipcart.js"
-        />
         <script
           src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
           integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
@@ -26,7 +16,7 @@ const MyApp = ({ Component, pageProps }) => {
       </Head>
       <Component {...pageProps} />
       <div id="modal-root"></div>
-      <script src="http://localhost:1337/xrp-cart/public/xrp-cart-init" />
+      <script src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"}/xrp-cart/public/xrp-cart-init`} />
     </Layout>
   )
 }

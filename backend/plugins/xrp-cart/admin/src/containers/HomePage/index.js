@@ -30,6 +30,7 @@ class HomePage extends React.Component {
       console.log(nfts);
       this.setState({ nfts });
     } catch (error) {
+      strapi.notification.error(error.message);
       this.setState({ destinationError: "xrp account not found" });
     }
   }
@@ -113,7 +114,7 @@ class HomePage extends React.Component {
           <td>
             <div style={{width:"80px"}}>
               <Text fontSize="sm" ellipsis>
-                <a href={`http://localhost:1337/xrp-cart/ipfs/${URI}`} target="_blank">{URI}</a>
+                <a href={`${strapi.backendURL}/xrp-cart/ipfs/${URI}`} target="_blank">{URI}</a>
               </Text>
             </div>
           </td>

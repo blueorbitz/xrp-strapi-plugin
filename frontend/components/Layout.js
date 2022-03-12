@@ -11,11 +11,6 @@ const Layout = ({ children, categories }) => {
         <div className="flex-grow">{children}</div>
         <Footer />
       </div>
-      <div
-        hidden
-        id="snipcart"
-        data-api-key="ODhhNWUxOGEtNTk0OC00OTQwLWJkOWMtM2M1ZmNjODU1ZDJhNjM3MzMyNzM0NjM1OTMyNjcz"
-      />
     </div>
   )
 }

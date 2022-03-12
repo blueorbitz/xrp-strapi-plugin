@@ -1,6 +1,12 @@
 $(document).ready(function () {
   console.log("ready!");
 
+  const scriptSrc = [];
+  $("script").each(function () { scriptSrc.push(this.src) });
+  const serverSrc = scriptSrc.find(o => o.indexOf('/xrp-cart/public/xrp-cart-init') !== -1);
+  const server = (new URL(serverSrc));
+  console.log("Strapi server:", server.origin);
+
   if (localStorage.getItem('xrp-cart-id') == null)
     localStorage.setItem('xrp-cart-id', generateUuid());
   refreshCartCheckout();
@@ -8,7 +14,7 @@ $(document).ready(function () {
   $("body").on("click", ".xrpcart-checkout", async function () {
     const id = `id=${localStorage.getItem('xrp-cart-id')}`;
     const redir = `redir=${encodeURIComponent(location.origin)}`
-    window.location.href = `http://localhost:1337/xrp-cart/public/pay.html?${id}&${redir}`;
+    window.location.href = `${server.origin}/xrp-cart/public/pay.html?${id}&${redir}`;
   });
 
   $("body").on("click", ".xrpcart-add-item", async function (e) {
@@ -20,33 +26,33 @@ $(document).ready(function () {
     });
     await refreshCartCheckout();
   });
+
+  async function refreshCartCheckout() {
+    const myId = localStorage.getItem('xrp-cart-id');
+    const storage = await fetchAPI('/xrp-cart/my-cart?id=' + myId);
+    const totalPrice = storage.reduce((total, o) => total + o.itemPrice, 0);
+    $(".xrpcart-total-price").text("$" + parseFloat(totalPrice).toFixed(2));
+  }
+
+  function getStrapiURL(path) {
+    return server.origin + `${path}`;
+  }
+
+  // Helper to make GET requests to Strapi
+  async function fetchAPI(path, options = {}) {
+    const requestUrl = getStrapiURL(path);
+    const response = await fetch(requestUrl, options);
+    const data = await response.json();
+    return data;
+  }
+
+  function generateUuid() {
+    let dt = new Date().getTime();
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+  }
 });
-
-async function refreshCartCheckout() {
-  const myId = localStorage.getItem('xrp-cart-id');
-  const storage = await fetchAPI('/xrp-cart/my-cart?id=' + myId);
-  const totalPrice = storage.reduce((total, o) => total + o.itemPrice, 0);
-  $(".xrpcart-total-price").text("$" + parseFloat(totalPrice).toFixed(2));
-}
-
-function getStrapiURL(path) {
-  return "http://localhost:1337" + `${path}`;
-}
-
-// Helper to make GET requests to Strapi
-async function fetchAPI(path, options = {}) {
-  const requestUrl = getStrapiURL(path);
-  const response = await fetch(requestUrl, options);
-  const data = await response.json();
-  return data;
-}
-
-function generateUuid() {
-  let dt = new Date().getTime();
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (dt + Math.random() * 16) % 16 | 0;
-    dt = Math.floor(dt / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-  return uuid;
-}

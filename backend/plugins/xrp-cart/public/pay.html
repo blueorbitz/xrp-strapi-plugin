@@ -570,7 +570,7 @@
     }
 
     function getStrapiURL(path) {
-      return "http://localhost:1337" + `${path}`;
+      return location.origin + `${path}`;
     }
 
     // Helper to make GET requests to Strapi
