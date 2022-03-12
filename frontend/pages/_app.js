@@ -16,7 +16,11 @@ const MyApp = ({ Component, pageProps }) => {
       </Head>
       <Component {...pageProps} />
       <div id="modal-root"></div>
-      <script src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"}/xrp-cart/public/xrp-cart-init`} />
+      <script
+        src={`${
+          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"
+        }/xrp-cart/public/xrp-cart-init`}
+      />
     </Layout>
   )
 }
