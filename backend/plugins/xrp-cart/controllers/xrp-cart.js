@@ -182,7 +182,7 @@ async function storeMeta({ xrpId, content }) {
   const meta = content;
 
   const xrpsetting = strapi.query("xrpsetting", "xrp-cart");
-  setting = await xrpsetting.create({
+  const setting = await xrpsetting.create({
     key: `meta-${uid}`,
     value: JSON.stringify(meta),
   });
