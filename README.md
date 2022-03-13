@@ -22,6 +22,11 @@ The invoice or token of the transaction is issued as NFT based [XRP NFT Concept]
 - `localhost:8000` - Strapi backend (development for `--watch-admin`)
 - `localhost:3000` - NextJS frontend ecommerce
 
+## Demo
+- [Video Demo](https://www.youtube.com/watch?v=2w09NoBm7Dc)
+- [Frontend Application Demo](https://xrp-strapi-plugin-ieta56uox-blueorbitz.vercel.app/)
+- [Backend Application Demo](https://strapi-xrp-demo.herokuapp.com/admin)
+
 ## Reference
 - [XRP NFT Explorer](https://nft-devnet.xrpl.org)
 - [XRP Module](https://js.xrpl.org/modules.html)
