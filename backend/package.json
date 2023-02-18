@@ -15,7 +15,7 @@
     "openpgp": "^5.2.0",
     "pg": "^8.7.3",
     "pg-connection-string": "^2.5.0",
-    "sqlite3": "5.0.0",
+    "sqlite3": "5.0.3",
     "strapi": "3.6.9",
     "strapi-admin": "3.6.9",
     "strapi-connector-bookshelf": "3.6.9",
